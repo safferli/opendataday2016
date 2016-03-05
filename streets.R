@@ -4,6 +4,7 @@ rm(list = ls()); gc(); gc()
 # options(java.parameters = "-XX:-UseGCOverheadLimit")
 options(bitmapType='cairo')
 options(scipen = 999)
+options(stringsAsFactors = FALSE)
 #library(bbbi)
 library(ggplot2)
 #library(RODBC)
@@ -11,7 +12,7 @@ library(dplyr)
 #library(tidyr)
 library(data.table)
 library(stringr)
-library(reshape)
+library(reshape2)
 
 # Define your workspace: "X:/xxx/"
 wd <- "D:/github/opendataday2016/"
@@ -61,21 +62,17 @@ numbers <- dta2 %>%
            housenr2 = gsub("-.*", "\\1", housenr), # create variable with last number (if any)
            housenr3 = ifelse(housenr %like% "-", gsub("[0-9]*-(.)", "\\1", housenr), NA)) %>%  # create variable with first number (if any)
     select(-housenr) %>% 
-    melt(id.vars = "streetname") %>% # convert to long format
+    melt(id.vars = "streetname") %>%# convert to long format
+    mutate(variable = as.character(variable)) %>% 
     filter(!is.na(value)) %>% 
     mutate(value = as.numeric(as.character(value))) %>%
-    select(-variable) %>%
-    group_by(streetname) %>% 
-    arrange(value)
+    select(-variable)
 
 # create df with streetname, from house number and to house number
-to <- unlist(lapply(split(numbers$value, numbers$streetname), function(x) tail(x, 1)))
-from <- unlist(sapply(split(numbers$value, numbers$streetname), 
-                                      function(x) head(x, 1)))
-streetname <- names(from)
-fromto <- cbind(streetname, from, to) %>% 
-    data.frame
-fromto <- data.frame(fromto, row.names = NULL)
+fromto <- numbers %>% 
+    group_by(streetname) %>% 
+    summarise(from = min(value), 
+              to = max(value))
 
 # merge fromto with streets df to get district info
 merged <- fromto %>%
@@ -84,4 +81,21 @@ merged <- fromto %>%
     group_by(streetname) %>%
     mutate(N = length(district)) %>% 
     filter(N == 1) %>% 
-    select(-N)
+    select(-N) %>% 
+    data.frame(stringsAsFactors = FALSE) %>%
+    mutate(district = as.character(district),
+           from = as.numeric(from),
+           to = as.numeric(to))
+
+expand.addresses <- function(x) {
+    data.frame(adress = paste(x$streetname, seq(from = x$from, to = x$to)), 
+               district = x$district)
+}
+
+test2 <- merged %>% 
+    filter(!is.na(to)) %>% 
+    group_by(streetname) %>% 
+    do(expand.addresses(.)) %>% 
+    data.frame(stringsAsFactors = FALSE) %>% 
+    select(-streetname)
+
