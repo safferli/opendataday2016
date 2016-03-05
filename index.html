@@ -1,0 +1,16 @@
+<!doctype html>
+<html>
+<script src="/socket.io/socket.io.js"></script>
+<script>
+  function changeImage(img, newurl) {
+	    document.getElementById(img).src= newurl;
+  }
+
+  var socket = io();
+  socket.on('newpic', function(msg){
+		        changeImage("img", msg)
+	});
+</script>
+<body>
+<img id = "img" src="https://upload.wikimedia.org/wikipedia/commons/3/33/Nicolas_Cage_2011_CC.jpg" alt="Mountain View" style="width:304px;height:228px;">
+</body>
