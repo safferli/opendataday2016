@@ -9,7 +9,9 @@ library(ggplot2)
 #library(RODBC)
 library(dplyr)
 #library(tidyr)
-#library(data.table)
+library(data.table)
+library(stringr)
+library(reshape)
 
 # Define your workspace: "X:/xxx/"
 wd <- "D:/github/opendataday2016/"
@@ -35,3 +37,51 @@ districts <- streets %>%
 # write csv of streetnames to get started on the nodejs side
 # encode in utf-8 because duh!
 write.csv(unique(streets$Straßenname), file = "ffm-streetnames.csv", row.names = FALSE, fileEncoding = "UTF-8")
+
+# clean up streets dataset (tolower, rename variables)
+streets <- streets %>% 
+    select(-Folge, -Postleitzahl) %>% 
+    dplyr::rename(streetname = Straßenname, from = Hausnr...von., to = Hausnr...bis.,
+                  district = Stadtteil.Name) %>% 
+    mutate(streetname = tolower(streetname),
+           district = tolower(district))
+
+# get house numbers for missing values
+ffm2 <- "http://www.offenedaten.frankfurt.de/dataset/9c902fd2-dd17-40cc-9fab-52c9c28aea3c/resource/064ae185-a5e6-4994-85c9-7403d1cf20a3/download/gprojekteopendatadatenamt62hausskoordinatendatensatze20164stand160304adressen.csv"
+dta2 <- read.csv(ffm2, sep=";", stringsAsFactors = FALSE, header = FALSE, fileEncoding = "WINDOWS-1258")
+
+# clean up
+numbers <- dta2 %>%
+    select(V10, V14) %>%
+    mutate(V14 = tolower(V14)) %>% 
+    dplyr::rename(housenr = V10, streetname = V14) %>% 
+    mutate(housenr = tolower(housenr),
+           housenr = gsub("([0-9]*)[a-z].*", "\\1", housenr), # strip out letters after house numbers
+           housenr = gsub("^[a-z].*", "", housenr), # exclude house numbers starting with letter(s) 
+           housenr2 = gsub("-.*", "\\1", housenr), # create variable with last number (if any)
+           housenr3 = ifelse(housenr %like% "-", gsub("[0-9]*-(.)", "\\1", housenr), NA)) %>%  # create variable with first number (if any)
+    select(-housenr) %>% 
+    melt(id.vars = "streetname") %>% # convert to long format
+    filter(!is.na(value)) %>% 
+    mutate(value = as.numeric(as.character(value))) %>%
+    select(-variable) %>%
+    group_by(streetname) %>% 
+    arrange(value)
+
+# create df with streetname, from house number and to house number
+to <- unlist(lapply(split(numbers$value, numbers$streetname), function(x) tail(x, 1)))
+from <- unlist(sapply(split(numbers$value, numbers$streetname), 
+                                      function(x) head(x, 1)))
+streetname <- names(from)
+fromto <- cbind(streetname, from, to) %>% 
+    data.frame
+fromto <- data.frame(fromto, row.names = NULL)
+
+# merge fromto with streets df to get district info
+merged <- fromto %>%
+    merge(data.frame(streetname = streets$streetname, 
+                     district = streets$district), by = "streetname") %>%
+    group_by(streetname) %>%
+    mutate(N = length(district)) %>% 
+    filter(N == 1) %>% 
+    select(-N)
