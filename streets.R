@@ -21,7 +21,7 @@ setwd(wd)
 
 ffm <- "http://www.offenedaten.frankfurt.de/dataset/7bd9de80-98de-45c2-99a8-497ce7b3c82c/resource/be5982fe-ed79-42f4-acdc-57ca4737fb7a/download/strassenverzeichnis2014.csv"
 
-dta <- read.csv(ffm, sep=";", stringsAsFactors = FALSE, fileEncoding = "WINDOWS-1258)
+dta <- read.csv(ffm, sep=";", stringsAsFactors = FALSE, fileEncoding = "WINDOWS-1258")
 
 streets <- dta %>% 
   select(Straßenname, Folge, Hausnr...von., Hausnr...bis., Stadtteil.Name, Postleitzahl)
