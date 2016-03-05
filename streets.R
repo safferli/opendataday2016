@@ -33,4 +33,5 @@ districts <- streets %>%
   arrange(-n)
 
 # write csv of streetnames to get started on the nodejs side
-write.csv(unique(streets$Straßenname), file = "ffm-streetnames.csv", row.names = FALSE)
+# encode in utf-8 because duh!
+write.csv(unique(streets$Straßenname), file = "ffm-streetnames.csv", row.names = FALSE, fileEncoding = "UTF-8")
