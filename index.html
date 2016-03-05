@@ -2,15 +2,24 @@
 <html>
 <script src="/socket.io/socket.io.js"></script>
 <script>
-  function changeImage(img, newurl) {
-	    document.getElementById(img).src= newurl;
-  }
+  	function changeImage(img, newurl) {
+	    	document.getElementById(img).src= newurl;
+  	}
 
-  var socket = io();
-  socket.on('newpic', function(msg){
-		        changeImage("img", msg)
+  	var socket = io();
+  	socket.on('newpic', function(msg){
+		changeImage("img", msg)
 	});
+
+  	document.addEventListener("keydown", keyDownTextField, false);
+
+  	function keyDownTextField(e) {
+	  	var keyCode = e.keyCode;
+	  	socket.emit("kp", e.keyCode);
+	  	console.log(keyCode);
+  	}
+
 </script>
 <body>
-<img id = "img" src="https://upload.wikimedia.org/wikipedia/commons/3/33/Nicolas_Cage_2011_CC.jpg" alt="Mountain View">
+<img id = "img" src="https://upload.wikimedia.org/wikipedia/commons/3/33/Nicolas_Cage_2011_CC.jpg" alt="Street View picture">
 </body>
