@@ -1,6 +1,12 @@
 var app = require('express')();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
+var pg = require('pg');
+
+var conn = process.env.DATABASE_URL || 'ubuntu://localhost:5432/frankfurt?ssl=true';
+
+var client = new pg.Client(conn);
+client.connect();
 
 var columns = ["streets"];
 require("csv-to-array")({
@@ -29,6 +35,11 @@ function generateHexString(length) {
 	      return ret.substring(0,length);
 }
 
+function createquery(id, text, swipe) {
+	s = swipe == 83;
+	return "insert into swipes values('" + id + "','" + text + "'," + s + ")";
+}
+
 io.on('connection', function(socket) {
 	console.log('a user connected');
         socket.id = generateHexString(24);
@@ -39,6 +50,7 @@ io.on('connection', function(socket) {
 		if(keyCode == 65 | keyCode == 83) { 
 		  address = csvarray[Math.floor(Math.random() * len)]["streets"] + ",FrankfurtamMain";
 	  	  console.log(address, keyCode, socket.id);
+		  var query = client.query(createquery(socket.id, address, keyCode));
 	  	  socket.emit("newpic", generateGoogleLink(address));
 		};
 	  });
