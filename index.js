@@ -9,6 +9,7 @@ require("csv-to-array")({
 }, function (err, array) {
 	  console.log(err || array);
           var csvarray = array;
+	  var len = csvarray.length;
 
 //var csvarray = [{ streets: 'Zum Gottschalkhof' }, { streets: 'Zum Heidebuckel' },{ streets: 'Zum Laurenburger Hof' },{ streets: 'Zum Pfarrturm' },{ streets: 'Zum Schäferköppel' }]
 
@@ -20,15 +21,26 @@ function generateGoogleLink(location) {
 	return "https://maps.googleapis.com/maps/api/streetview?size=1200x1200&location=" + location + "&fov=90&pitch=5&key=AIzaSyCip6t4-QiECAb8KT0c5B-H7FoYopF_dAc" 
 }
 
+function generateHexString(length) {
+	  var ret = "";
+	    while (ret.length < length) {
+		        ret += Math.random().toString(16).substring(2);
+			  }
+	      return ret.substring(0,length);
+}
+
 io.on('connection', function(socket) {
 	console.log('a user connected');
-	address = csvarray[Math.floor(Math.random() * 200)]["streets"] + ",FrankfurtamMain";
-	io.emit("newpic", generateGoogleLink(address));
+        socket.id = generateHexString(24);
+	console.log(socket.id)
+	address = csvarray[Math.floor(Math.random() * len)]["streets"] + ",FrankfurtamMain";
+	socket.emit("newpic", generateGoogleLink(address));
 	socket.on("kp", function(keyCode) {
-		address = csvarray[Math.floor(Math.random() * 2000)]["streets"] + ",FrankfurtamMain";
-	  	console.log(address);
-		console.log(keyCode);
-	  	io.emit("newpic", generateGoogleLink(address));
+		if(keyCode == 65 | keyCode == 83) { 
+		  address = csvarray[Math.floor(Math.random() * len)]["streets"] + ",FrankfurtamMain";
+	  	  console.log(address, keyCode, socket.id);
+	  	  socket.emit("newpic", generateGoogleLink(address));
+		};
 	  });
 });
 
