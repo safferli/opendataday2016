@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Frankfurt Stadtteilfinder Tinder</title>
+  <meta name="description" content="">
+  <meta name="author" content="Christoph Safferling">
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <link rel="stylesheet" href="./frameworks/revealjs/css/reveal.min.css">
+  <link rel="stylesheet" href="./frameworks/revealjs/css/theme/default.css" id="theme">
+  <link rel="stylesheet" href="./highlighters/highlight.js/css/tomorrow.css" id="theme">
+  <!--[if lt IE 9]>
+  <script src="lib/js/html5shiv.js"></script>
+  <![endif]-->  <link rel="stylesheet" href = "assets/css/ribbons.css">
+
+</head>
+<body>
+  <div class="reveal">
+    <div class="slides">
+      <section class='' data-state='frankfurt' id='slide-1'>
+  
+  <!-- title slide -->
+
+<p style="color: #13DAEC; font-family: 'Lato', sans-serif; font-size: 180%; margin: 0 0 25% 0;">
+  Frankfurt Stadtteilfinder Tinder <br />
+  <span style="font-size: 80%;"></span>
+</p>
+
+<p style="font-size: 130%; color: #ffffff;">
+  Hackfrankfurt <br/ >
+  Open Data Day 2016
+</p>
+
+<style>
+.gif150
+{
+  width: 150%;
+  height: auto;
+}
+</style>
+
+<style>
+html.frankfurt body {
+background:url("./assets/img/frankfurt.jpg");
+background-position:center;
+background-size: 100%;
+} 
+</style>
+
+<!-- image credit: https://www.flickr.com/photos/friedrichs/14260935259/ -->
+
+</section>
+<section class='' data-state='' id='slide-2'>
+  <h2>Frankfurt</h2>
+  <ul>
+<li>16 area districts (<em>Ortsbezirke</em>)</li>
+<li>46 city districts (<em>Stadtteile</em>)</li>
+<li>118 city boroughs (<em>Stadtbezirke</em>)</li>
+</ul>
+
+<!-- -->
+
+<p>&hellip; which one is your favourite? </p>
+
+</section>
+<section class='' data-state='' id='slide-3'>
+  <h2>Setup</h2>
+  <ul>
+<li>randomly pick a Frankfurt address
+
+<ul>
+<li>from <a href="http://offenedaten.frankfurt.de/dataset/hauskoordinaten-franfurt">Hauskoordinaten open data</a></li>
+</ul></li>
+<li>present the user with a photo of the address
+
+<ul>
+<li>from the <a href="https://developers.google.com/maps/documentation/streetview/">Google Streetview API</a></li>
+</ul></li>
+<li>user &quot;swipes&quot; left (&quot;don&#39;t like&quot;), or right (&quot;like&quot;)</li>
+<li>store all swipes on the server</li>
+<li>present the &quot;match&quot;, and a heatmap of &quot;district love&quot;&quot;</li>
+</ul>
+
+</section>
+<section class='' data-state='' id='slide-4'>
+  <h2>The App in Action!</h2>
+  <p>asdf</p>
+
+</section>
+<section class='' data-state='' id='slide-5'>
+  <h2>Technology used</h2>
+  <ul>
+<li><a href="https://nodejs.org/en/">node.js</a> for the server</li>
+<li><a href="http://socket.io/">socket.io</a> for server/client communication</li>
+<li><a href="http://www.postgresql.org/">postgreSQL</a> for database storing</li>
+<li><a href="https://www.r-project.org/">R</a> for calculations and mapping</li>
+<li><a href="https://github.com/trestletech/plumber">plumbeR</a> for RESTful communication between R and node.js</li>
+<li><a href="https://en.wikipedia.org/wiki/Apfelwein">Ebbelwoi</a> for the idea</li>
+</ul>
+
+</section>
+<section class='' data-state='' id='slide-6'>
+  <h2>Code is on github</h2>
+  <p><a href="https://github.com/safferli/opendataday2016">https://github.com/safferli/opendataday2016</a> </p>
+
+</section>
+<section class='' data-state='' id='slide-7'>
+  <h2>main obstacles faced</h2>
+  <ul>
+<li>streetnames and numbers very patchy</li>
+<li>bulk-geolocationing was not possible</li>
+<li>no pretty front-end stuff &#9785;</li>
+</ul>
+
+</section>
+<section class='' data-state='' id='slide-8'>
+  <h2>Happy Stadtteilfindertindering!</h2>
+  <p><img src="assets/img/tinder-schnitzel.gif" class="gif150" /></p>
+
+</section>
+    </div>
+  </div>
+</body>
+  <script src="./frameworks/revealjs/lib/js/head.min.js"></script>
+  <script src="./frameworks/revealjs/js/reveal.min.js"></script>
+  <script>
+  // Full list of configuration options available here:
+  // https://github.com/hakimel/reveal.js#configuration
+  Reveal.initialize({
+    controls: true,
+    progress: true,
+    history: true,
+    center: true,
+    theme: Reveal.getQueryHash().theme || 'default', 
+    transition: Reveal.getQueryHash().transition || 'default', 
+    dependencies: [
+    // Cross-browser shim that fully implements classList -
+    // https://github.com/eligrey/classList.js/
+      { src: './frameworks/revealjs/lib/js/classList.js', condition: function() { return !document.body.classList;}},
+      // Zoom in and out with Alt+click
+      { src: './frameworks/revealjs/plugin/zoom-js/zoom.js', async: true, condition: function() { return !!document.body.classList; } },
+      // Speaker notes
+      { src: './frameworks/revealjs/plugin/notes/notes.js', async: true, condition: function() { return !!document.body.classList; } },
+      // Remote control your reveal.js presentation using a touch device
+      //{ src: './frameworks/revealjs/plugin/remotes/remotes.js', async: true, condition: function() { return !!document.body.classList; } }
+      ]
+  });
+  </script>  <!-- LOAD HIGHLIGHTER JS FILES -->
+<script src="./highlighters/highlight.js/highlight.pack.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+<!-- DONE LOADING HIGHLIGHTER JS FILES -->
+ 
+
+</html>
