@@ -8,16 +8,9 @@ var conn = process.env.DATABASE_URL || 'ubuntu://localhost:5432/frankfurt?ssl=tr
 var client = new pg.Client(conn);
 client.connect();
 
-var columns = ["streets"];
-require("csv-to-array")({
-	   file: "ffm-streetnames.csv",
-	   columns: columns
-}, function (err, array) {
-	  console.log(err || array);
-          var csvarray = array;
-	  var len = csvarray.length;
+client.query("SELECT * from addresslist", function(err, addressfull) {
 
-//var csvarray = [{ streets: 'Zum Gottschalkhof' }, { streets: 'Zum Heidebuckel' },{ streets: 'Zum Laurenburger Hof' },{ streets: 'Zum Pfarrturm' },{ streets: 'Zum Schäferköppel' }]
+var address = addressfull["rows"];
 
 app.get('/', function(req, res){
 	  res.sendFile(__dirname + '/index.html');
@@ -35,23 +28,41 @@ function generateHexString(length) {
 	      return ret.substring(0,length);
 }
 
-function createquery(id, text, swipe) {
+function createquery(id, text, swipe, district) {
 	s = swipe == 83;
-	return "insert into swipes values('" + id + "','" + text + "'," + s + ")";
+	return "insert into swipes values('" + id + "','" + text + "'," + s + ",'" + district+"')";
+}
+
+len = address.length;
+//console.log(len);
+
+
+function getrow(address, len) {
+	result =  address[Math.floor(Math.random() * len)];
+	console.log(result["district"]);
+	return result;
+}
+
+function getAddress(singlerow) {
+	//console.log(address);
+	result = singlerow["address"]  +  ", FrankfurtamMain";
+	//console.log(result);
+	return result;
 }
 
 io.on('connection', function(socket) {
 	console.log('a user connected');
+	singlerow = getrow(address, len);
         socket.id = generateHexString(24);
-	console.log(socket.id)
-	address = csvarray[Math.floor(Math.random() * len)]["streets"] + ",FrankfurtamMain";
-	socket.emit("newpic", generateGoogleLink(address));
+	singleaddress = getAddress(singlerow);
+	socket.emit("newpic", generateGoogleLink(singleaddress));
 	socket.on("kp", function(keyCode) {
 		if(keyCode == 65 | keyCode == 83) { 
-		  address = csvarray[Math.floor(Math.random() * len)]["streets"] + ",FrankfurtamMain";
-	  	  console.log(address, keyCode, socket.id);
-		  var query = client.query(createquery(socket.id, address, keyCode));
-	  	  socket.emit("newpic", generateGoogleLink(address));
+		  singlerow = getrow(address, len);
+		  singleaddress = getAddress(singlerow);
+	  	  console.log(singlerow);
+		  var query = client.query(createquery(socket.id, singlerow["address"], keyCode, singlerow["district"]));
+	  	  socket.emit("newpic", generateGoogleLink(singleaddress));
 		};
 	  });
 });
@@ -60,4 +71,4 @@ http.listen(3000, function(){
 	  console.log('listening on *:3000');
 });
 
-});
+}); 
