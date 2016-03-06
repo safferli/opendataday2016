@@ -1,7 +1,9 @@
+# getDistrict.R
 library(dplyr)
 
 con <- src_postgres(db = "frankfurt")
 
+#* @get /district
 getDistrict <- function(userID) {
     # get swipes for specified user
     data <- con %>%
