@@ -52,7 +52,7 @@ background-size: 100%;
 <!-- -->
   
    
-&hellip; which one is your favourite? 
+&hellip; where would you want to live? 
 
 
 ---
@@ -64,15 +64,27 @@ background-size: 100%;
 - present the user with a photo of the address
     - from the [Google Streetview API](https://developers.google.com/maps/documentation/streetview/)
 - user "swipes" left ("don't like"), or right ("like")
-- store all swipes on the server
-- present the "match", and a heatmap of "district love""
+    - store all swipes on the server
+    - present the "*district match*", and a heatmap of "*district love*"
 
 
----
+--- &vertical
 
 ## The App in Action!
 
-asdf
+http://ec2-52-11-118-34.us-west-2.compute.amazonaws.com:3000/
+
+***
+
+## Stadtteilfindertinder
+
+<img src="assets/img/frankfurtsscreenshot.png" />
+
+***
+
+## Rankfurt
+
+<img src="assets/img/sample_map_small.png" />
 
 
 ---
@@ -81,6 +93,7 @@ asdf
 
 - [node.js](https://nodejs.org/en/) for the server
 - [socket.io](http://socket.io/) for server/client communication
+- [amazon aws](https://aws.amazon.com/) for the actual VM (free version)
 - [postgreSQL](http://www.postgresql.org/) for database storing
 - [R](https://www.r-project.org/) for calculations and mapping
 - [plumbeR](https://github.com/trestletech/plumber) for RESTful communication between R and node.js
@@ -94,13 +107,17 @@ asdf
 https://github.com/safferli/opendataday2016 
 
 
----
+--- &vertical
 
 ## main obstacles faced
 
 - streetnames and numbers very patchy
 - bulk-geolocationing was not possible
 - no pretty front-end stuff &#9785;
+
+***
+
+<img src="assets/img/daffy-klatsch.gif" />
 
 
 ---
