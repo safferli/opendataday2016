@@ -78,7 +78,8 @@ add_district_text <- function(p_map, top_district) {
 
   p_map +
     geom_text(aes(x = mid_long, y = mid_lat, label = district),
-              size = 3, data = df_top_district)
+              size = 2,
+              data = df_top_district)
 }
 
 path_dir <- "opendataday2016/public/images/results/p_map.png"
