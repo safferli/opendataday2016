@@ -3,7 +3,7 @@
 <head>
   <link rel="stylesheet" type="text/css" href="/css/styles.css"/> 
   <script src="/socket.io/socket.io.js"></script>
-  <script src="//code.jquery.com/jquery-1.12.0.min.js"></script>
+  <script src="https://code.jquery.com/jquery-1.12.0.min.js"></script>
   <script>
   	function changeImage(img, newurl) {
 	    	document.getElementById(img).src= newurl;
@@ -22,11 +22,14 @@
 	  	console.log(keyCode);
   	}
 
-//	function getresult() {
-//		$.get("http://ec2-52-11-118-34.us-west-2.compute.amazonaws.com:8000/district?userID=37c8c8c8d6b25ff7fbd4bd92", function(data) {
-//	console.log(data);
-//	})
-//	}
+	function getresult() {
+		socket.emit("idplease", "What is my id");
+		socket.on("yourid", function(id) {
+			$.get("http://ec2-52-11-118-34.us-west-2.compute.amazonaws.com:8000/district?userID=" + id, function(data) {
+		alert("IT'S A MATCH:" data[0]);
+			})
+		})
+	}
 
 
 	
