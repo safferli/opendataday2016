@@ -37,6 +37,8 @@ html.frankfurt body {
 background:url("./assets/img/frankfurt.jpg");
 background-position:center;
 background-size: 100%;
+background-repeat: no-repeat;
+background-color: #35383b;
 } 
 </style>
 <!-- image credit: https://www.flickr.com/photos/friedrichs/14260935259/ -->
