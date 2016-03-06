@@ -6,7 +6,7 @@ library(dplyr)
 # )
 #
 # copy_to(db, swipes, temporary = FALSE)
-user_id <- 9
+user_id <- "e6bbd29c776754afb7bca295"
 
 db <- src_sqlite("merged.sqlite")
 
@@ -16,7 +16,7 @@ frankfurt <- dplyr::tbl(db, "frankfurt") %>%
 swipes <- tbl(db, "swipes") %>%
   filter(user_id == user_id) %>%
   collect() %>%
-  left_join(frankfurt)
+  left_join(frankfurt, by = c("address" = "text"))
 
 result <- swipes %>%
   group_by(district) %>%
