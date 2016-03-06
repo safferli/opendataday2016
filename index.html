@@ -1,7 +1,9 @@
 <!doctype html>
 <html>
-<script src="/socket.io/socket.io.js"></script>
-<script>
+<head>
+  <link rel="stylesheet" type="text/css" href="opendataday2016/styles.css"> 
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
   	function changeImage(img, newurl) {
 	    	document.getElementById(img).src= newurl;
   	}
@@ -19,7 +21,11 @@
 	  	console.log(keyCode);
   	}
 
-</script>
+  </script>
+</head>
 <body>
-<img id = "img" src="https://upload.wikimedia.org/wikipedia/commons/3/33/Nicolas_Cage_2011_CC.jpg" alt="Street View picture">
+<div id = "screen">
+  <img id = "img" src="https://upload.wikimedia.org/wikipedia/commons/3/33/Nicolas_Cage_2011_CC.jpg" alt="Street View picture">
+  <p id = "overlay"></p>
+</div>
 </body>
