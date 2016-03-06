@@ -1,7 +1,11 @@
-var app = require('express')();
+var express = require('express');
+var app = express();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var pg = require('pg');
+var path = require("path");
+
+app.use(express.static(path.join(__dirname, 'public')));
 
 var conn = process.env.DATABASE_URL || 'ubuntu://localhost:5432/frankfurt?ssl=true';
 
