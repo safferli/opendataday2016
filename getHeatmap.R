@@ -56,7 +56,7 @@ getDisctrictMap <- function(userID) {
         theme_void() +
         theme(legend.position = "none")
     
-    path_dir <- paste0("opendataday2016/public/images/results/", userID, ".png")
+    path_dir <- paste0("public/images/results/", userID, ".png")
     
     ggsave(p_map, filename = path_dir)
     
