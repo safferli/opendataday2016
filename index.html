@@ -1,7 +1,10 @@
 <!doctype html>
 <html>
-<script src="/socket.io/socket.io.js"></script>
-<script>
+<head>
+  <link rel="stylesheet" type="text/css" href="/css/styles.css"/> 
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="//code.jquery.com/jquery-1.12.0.min.js"></script>
+  <script>
   	function changeImage(img, newurl) {
 	    	document.getElementById(img).src= newurl;
   	}
@@ -19,7 +22,25 @@
 	  	console.log(keyCode);
   	}
 
-</script>
+//	function getresult() {
+//		$.get("http://ec2-52-11-118-34.us-west-2.compute.amazonaws.com:8000/district?userID=37c8c8c8d6b25ff7fbd4bd92", function(data) {
+//	console.log(data);
+//	})
+//	}
+
+
+	
+
+  </script>
+</head>
 <body>
-<img id = "img" src="https://upload.wikimedia.org/wikipedia/commons/3/33/Nicolas_Cage_2011_CC.jpg" alt="Street View picture">
+<div id = "screen">
+  <img id = "img" src="https://upload.wikimedia.org/wikipedia/commons/3/33/Nicolas_Cage_2011_CC.jpg" alt="Street View picture">
+  <p id = "overlay"></p>
+</div>
+<div id="timderpics">
+<img class = "buttons" src = "images/no-inkscape.png" onclick="getresult()">
+<img class = "buttons" src = "images/yes-inkscape.png">
+</div>
+
 </body>
