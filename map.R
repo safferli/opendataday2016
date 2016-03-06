@@ -68,6 +68,19 @@ p_map <- ggmap(map_ffm) +
   theme_void() +
   theme(legend.position = "none")
 
+add_district_text <- function(p_map, top_district) {
+
+  df_top_district <- data_teil$fortified %>%
+    filter(STTLNAME == top_district) %>%
+    summarise(mid_lat = mean(c(max(lat), min(lat))),
+              mid_long = mean(c(max(long), min(long))),
+              district = unique(STTLNAME))
+
+  p_map +
+    geom_text(aes(x = mid_long, y = mid_lat, label = district),
+              size = 3, data = df_top_district)
+}
+
 path_dir <- "opendataday2016/public/images/results/p_map.png"
 
 ggsave(p_map, filename = path_dir)
