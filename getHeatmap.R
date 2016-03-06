@@ -9,7 +9,7 @@ source("get_shapefile.R")
 con <- src_postgres(db = "frankfurt")
 
 #* @get /heatmap
-getDisctrictMap <- function(userID, ) {
+getDisctrictMap <- function(userID) {
     # Get lists of dataframes with coordinates and shapes
     data_teil <- get_shapefile("ffmstadtteilewahlen.geojson")
     
