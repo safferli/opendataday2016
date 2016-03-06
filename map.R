@@ -1,33 +1,73 @@
-library(ggplot2)
+library(ggmap)
 library(dplyr)
 library(stringr)
 library(maptools)
 gpclibPermit()
 
-ffm_gjson <- "http://offenedaten.frankfurt.de/dataset/85b38876-729c-4a78-910c-a52d5c6df8d2/resource/23d004a5-8a3b-4edf-bd70-4044263c9607/download/ffmstadtbezirkewahlen.geojson"
-download.file(ffm_gjson, "ffmstadtbezirkewahlen.geojson")
+# Download shape file if it doesn't exist
+if(!file.exists("ffmstadtteilewahlen.geojson")) {
+  stadtteil <- paste0("http://www.offenedaten.frankfurt.de/dataset/",
+                      "85b38876-729c-4a78-910c-a52d5c6df8d2/resource/",
+                      "84dff094-ab75-431f-8c64-39606672f1da/download/",
+                      "ffmstadtteilewahlen.geojson")
 
-orts <- geojsonio::geojson_read("ffmstadtbezirkewahlen.geojson", what = "sp")
+  download.file(stadtteil, "ffmstadtteilewahlen.geojson")
+}
 
-orts@data$id <- rownames(orts@data)
-df_orts <- fortify(orts, region = "id") %>%
-  left_join(orts@data, by = "id")
+get_data <- function(shape_filename) {
+  df_shape <- geojsonio::geojson_read(shape_filename, what = "sp")
 
-df_coord <- data.frame(long = seq(min(df_orts$long),
-                                  max(df_orts$long),
-                                  length.out = 25),
-                       lat = seq(min(df_orts$lat),
-                                 max(df_orts$lat),
-                                 length.out = 25)) %>%
-  expand.grid()
+  df_shape@data$id <- rownames(df_shape@data)
+  df_fortified <- fortify(df_shape, region = "id") %>%
+    left_join(df_shape@data, by = "id")
 
-coord_poly <- SpatialPoints(df_coord, proj4string = CRS(proj4string(orts)))
-coord_in_poly <- over(coord_poly, orts)
+  results <- list(df_fortified, df_shape)
+  names(results) <- c("fortified", "shape")
+  results
+}
 
-p_map <- ggplot(df_orts, aes(lat, long)) +
-  geom_polygon(aes(group = group, fill = STB_Name)) +
-  geom_path(aes(group = group), color = "white") +
-  coord_equal()
+# Get lists of dataframes with coordinates and shapes
+data_teil <- get_data("ffmstadtteilewahlen.geojson")
 
-p_map +
-  geom_point(data = df_coord[!is.na(coord_in_poly$id), ])
+# Read swipes
+swipes <- read.csv("newswipes.csv", stringsAsFactors = FALSE)
+
+# Make uniform district names
+data_teil$fortified$STTLNAME <- data_teil$fortified$STTLNAME %>%
+  as.character() %>%
+  tolower()
+
+swipes$district <- swipes$district %>%
+  as.character() %>%
+  tolower() %>%
+  str_replace_all("sachsenhausen-n", "sachsenhausen-nord") %>%
+  str_replace_all("sachsenhausen-s", "sachsenhausen-süd") %>%
+  str_replace_all("gutleutviertel|bahnhofsviertel", "gutleut-/bahnhofsviertel")
+
+# Calculate swipe shares
+swipes_sum <- swipes %>%
+  mutate(swipe = ifelse(swipe == "t", 1, -1)) %>%
+  group_by(id, district) %>%
+  summarise(swipe_share = mean(swipe)) %>%
+  rename("user_id" = id) %>%
+  ungroup()
+
+# Join swipes data with shape data
+data_teil$fortified <- left_join(data_teil$fortified, swipes_sum,
+                                 by = c("STTLNAME" = "district"))
+
+# Make map
+bbox <- make_bbox(data_teil$fortified$long, data_teil$fortified$lat)
+map_ffm <- get_map(bbox)
+
+p_map <- ggmap(map_ffm) +
+  geom_polygon(aes(y = lat, x = long, group = group, fill = swipe_share),
+               alpha = 0.65,
+               data = data_teil$fortified) +
+  scale_fill_gradient(low = "red", high = "green") +
+  theme_void() +
+  theme(legend.position = "none")
+
+path_dir <- "opendataday2016/public/images/results/p_map.png"
+
+ggsave(p_map, filename = path_dir)
