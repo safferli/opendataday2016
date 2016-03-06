@@ -1,4 +1,5 @@
 # getHeatmap.R
+options(stringsAsFactors = FALSE)
 library(ggmap)
 library(dplyr)
 library(stringr)
@@ -55,7 +56,7 @@ getDisctrictMap <- function(userID) {
         theme_void() +
         theme(legend.position = "none")
     
-    path_dir <- "opendataday2016/public/images/results/p_map.png"
+    path_dir <- paste0("opendataday2016/public/images/results/", userID, ".png")
     
     ggsave(p_map, filename = path_dir)
     
