@@ -3,22 +3,21 @@ library(dplyr)
 con <- src_postgres(db = "frankfurt")
 
 getDistrict <- function(userID) {
-    df <- con %>%
+    # get swipes for specified user
+    data <- con %>%
         tbl("swipes") %>%
-        filter(userID == userID) %>% 
+        filter(id == userID) %>%
         collect
     
-    district <- con %>% 
-        tbl("adresslist") %>% 
-        collect
-    
-    fav <- df %>% 
-        mutate(text = gsub(",*", "", text)) %>% 
-        merge(district, by = "address") %>% 
+    # compute swipe percentage and pick the district with the highest right swipe 
+    # percentage (randomly, in case there are several districts with max(perc)) 
+    data %>%  
+        mutate(swipe = ifelse(swipe == "f", 0, 1)) %>% 
         group_by(district) %>% 
-        summarise(perc = (swipes == 1) / n()*100) %>%
+        summarise(perc = sum(swipe, na.rm = TRUE) / length(swipe)*100) %>%
         arrange(-perc) %>% 
-        head(1) %>% 
-        unlist
+        filter(perc == max(perc)) %>%
+        sample_n(1) %>% 
+        unlist(use.names = FALSE)
     
 }
